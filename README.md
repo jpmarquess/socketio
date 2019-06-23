@@ -1,2 +1,2 @@
 # socketio
-Socket.io and Nodejs
+Simple chat with Socket.io and Nodejs
