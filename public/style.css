@@ -24,30 +24,30 @@ header {
 }
 
 h1 {
-    font-family: 'Comfortaa', sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 0px;
 }
 
 div#change_username, section#input_zone {
-    border: 5px outset #8258FA;
+    border: 5px outset #000;
 }
 
 div#change_username {
     height: 3%;
     display: inline-block;
-    background-color: #BCA9F5;
+    background-color: #ccc;
 }
 
 section#chatroom {
-    border: 5px inset #8258FA;
-    height: 65%;
+    border: 5px inset #000;
+    height: 80%;
     overflow: auto;
 }
 
 section#input_zone {
     height: 7%;
     text-align: center;
-    background-color: #BCA9F5;
+    background-color: #ccc;
 }
 
 .vertical-align {
@@ -59,37 +59,36 @@ section#input_zone {
 }
 
 input#username {
-    font-family: 'Comfortaa', sans-serif;
+    font-family: 'Arial', sans-serif;
 }
 
 input#message {
     display: inline-block;
     width: 88%;
     height: 70%;
-    font-family: 'Comfortaa', sans-serif;
+    font-family: 'Arial', sans-serif;
     font-size: 2vh;
 }
 
 button#send_message {
     display: inline-block;
-    height: 70%;
-    width: 10%;
+    padding: 11px 70px;
 }
 
 p.message {
     margin: 0px;
     width: 100%;
     font-size: 2.1vh;
-    font-family: 'Comfortaa', sans-serif;
+    font-family: 'Arial', sans-serif;
     padding: 1vh;
 }
 
 .message:nth-child(even) {
-    background-color: #81DAF5;
+    background-color: #ccc;
 }
 
 .message:nth-child(odd) {
-    background-color: #81BEF7;
+    border-bottom: 1px solid #000;
 }
 
 #feedback p {

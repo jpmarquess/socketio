@@ -4,7 +4,9 @@ const multer = require('multer');
 const path = require('path');
 const app = express();
 
-//set the template engine ejs
+var user;
+
+// Set the template engine ejs
 app.set('view engine', 'ejs');
 
 //middlewares
@@ -15,7 +17,7 @@ app.get('/', (req, res) => {
     res.render('index');
 })
 
-//Listen on port 3000
+// Listen on port 3000
 var server = app.listen(3000, function () {
     var host = server.address().address;
     var port = server.address().port;
@@ -58,10 +60,10 @@ function checkFileType(file, cb) {
     }
 }
 
-//socket.io
+// Socket.io
 const io = require("socket.io")(server)
 
-//listen on every connection
+// Listen on every connection
 io.on('connection', (socket) => {
     function writeLog(data) {
         fs.appendFile("log.txt", data, function (err) {
@@ -70,48 +72,53 @@ io.on('connection', (socket) => {
         });
     }
 
-    //listen on connect
-    socket.on("new_user", (name) => {
-        socket.username = name;
-        socket.broadcast.emit("user_connected", name);
-    })
-
+    socket.username = "Anonymous";
+    user = socket.username;
     console.log("User connected");
 
-    //listen on change_username
+    socket.broadcast.emit("user_connected", { username: socket.username });
+
+    // Listen on change_username
     socket.on('change_username', (data) => {
         var old_username = socket.username;
-        socket.username = data.username;
-        io.sockets.emit('change_username', { username: socket.username, old_username: old_username });
+
+        if (!data.username.replace(/\s/g, '').length) {
+            io.sockets.emit('error', { message: "Username field is empty !" })
+        } else {
+            socket.username = data.username;
+            user = socket.username;
+            io.sockets.emit('change_username', { username: user, old_username: old_username });
+        }
     })
 
-    //listen on new_message
+    // Listen on new_message
     socket.on('new_message', (data) => {
-        //broadcast the new message
-        io.sockets.emit('new_message', { message: data.message, username: socket.username });
+        if (!data.message.replace(/\s/g, '').length) {
+            io.sockets.emit('error', { message: "Message field is empty !" });
+        } else {
+            //broadcast the new message
+            io.sockets.emit('new_message', { message: data.message, username: socket.username });
 
-        var log = socket.username + " " + data.message + " " + new Date() + "\n";
+            var log = socket.username + " " + data.message + " " + new Date() + "\n";
 
-        writeLog(log);
+            writeLog(log);
+        }
     })
 
-    //listen on typing
+    // Listen on typing
     socket.on('typing', (data) => {
         socket.broadcast.emit('typing', { username: socket.username })
     })
 
-    //listen on disconnect
-    socket.on('disconnect', (data) => {
+    // Listen on disconnect
+    socket.on('disconnect', () => {
         io.sockets.emit('disconnect', { username: socket.username });
         console.log("User disconnected");
     });
 
-    app.post('/upload', (req, res) => {
-        console.log(socket.username);
-
+    // Post image
+    app.post('/', (req, res) => {
         upload(req, res, (err) => {
-            console.log(socket.username);
-
             if (err) {
                 res.render('index', {
                     msg: err
@@ -122,7 +129,7 @@ io.on('connection', (socket) => {
                         msg: 'Error: No File Selected!'
                     });
                 } else {
-                    io.sockets.emit("send_image", { image_path: req.file.filename, username: socket.username });
+                    io.sockets.emit("send_image", { image_path: req.file.filename, username: user });
                 }
             }
         });
